@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Carb Tune Journal</title>
+<meta name="description" content="A tuning logbook for carbureted motorcycles. Log every jet, needle, and mixture-screw change — and how the bike ran afterward. Works offline, data stays on your device.">
+<meta name="theme-color" content="#1c1a17">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon-192.png">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body>
+<header class="top">
+  <h1>🏍️ Carb Tune Journal</h1>
+  <p class="tagline">Every jet change, every test ride — in the book, with how it ran.</p>
+</header>
+
+<main>
+  <!-- JOURNAL -->
+  <section id="view-journal" class="view active">
+    <label>Carburetor
+      <select id="journal-carb"></select>
+    </label>
+
+    <div id="journal-current" class="card"></div>
+
+    <h2>Log a change</h2>
+    <form id="log-form" class="card"></form>
+
+    <h2>History</h2>
+    <p class="muted">Newest first. Each entry shows what changed from the setup before it.</p>
+    <div id="journal-history"></div>
+  </section>
+
+  <!-- BIKES & CARBS -->
+  <section id="view-bikes" class="view">
+    <h2>Bikes &amp; carburetors</h2>
+    <div id="bikes-list"></div>
+
+    <h3>Add a bike</h3>
+    <form id="bike-form" class="card">
+      <div class="grid">
+        <label>Name<input type="text" id="bike-name" required placeholder="e.g. Example 1997 Softail"></label>
+        <label>Year<input type="text" id="bike-year" inputmode="numeric" placeholder="1997"></label>
+        <label>Make<input type="text" id="bike-make" placeholder="Harley-Davidson"></label>
+        <label>Model<input type="text" id="bike-model" placeholder="Heritage Softail"></label>
+        <label>Odometer (mi)<input type="number" id="bike-odometer" inputmode="numeric"></label>
+      </div>
+      <label>Notes<textarea id="bike-notes" rows="2"></textarea></label>
+      <button type="submit" class="primary">Add bike</button>
+    </form>
+
+    <h3>Add a carburetor</h3>
+    <form id="carb-form" class="card">
+      <div class="grid">
+        <label>Bike<select id="carb-bike"></select></label>
+        <label>Carb model<input type="text" id="carb-model" required placeholder="Keihin CV40"></label>
+        <label>Nickname<input type="text" id="carb-nickname" placeholder="Genuine CV40 (defaults to model)"></label>
+        <label>Status
+          <select id="carb-status">
+            <option value="on-bike">on-bike</option>
+            <option value="spare">spare</option>
+            <option value="parts-donor">parts-donor</option>
+            <option value="retired">retired</option>
+          </select>
+        </label>
+      </div>
+      <label>Notes<textarea id="carb-notes" rows="2"></textarea></label>
+      <button type="submit" class="primary">Add carburetor</button>
+    </form>
+
+    <h3>Factory baseline</h3>
+    <p class="muted">The stock setup from your manual or the manufacturer's instruction sheet. The <b>source is required</b> — future-you trusts numbers with a citation, not from memory.</p>
+    <form id="baseline-form" class="card">
+      <label>Carburetor<select id="baseline-carb"></select></label>
+      <div id="baseline-fields" class="grid"></div>
+      <label>Source (required)<input type="text" id="baseline-source" required placeholder="e.g. Softail Service Manual #99482-98, Section 4"></label>
+      <button type="submit" class="primary">Save baseline</button>
+    </form>
+  </section>
+
+  <!-- CV40 REFERENCE -->
+  <section id="view-reference" class="view">
+    <h2>CV40 reference</h2>
+    <p class="muted">Keihin CV40 on 1997–1998 Harley-Davidson Softail (Evolution). Every spec below is tagged: <span class="badge stock">FACTORY</span> means it comes from the factory service manual; <span class="badge changed">COMMUNITY</span> means rider practice, not a factory spec. Nothing here is guessed.</p>
+
+    <h3><span class="badge stock">FACTORY</span> Published specs</h3>
+    <table class="setup"><tbody id="ref-factory"></tbody></table>
+    <p class="source">Source: Harley-Davidson Softail Service Manual #99482-98, Section 4 (Specifications &amp; Fuel System).</p>
+
+    <h3><span class="badge changed">COMMUNITY</span> Tuning guide</h3>
+    <p class="muted">Rider practice from the Keihin CV community guides — useful, but not factory spec. Verify on your own bike.</p>
+    <div id="ref-tuning"></div>
+
+    <h3>Not listed here</h3>
+    <p>S&amp;S Super E/G, Linkert M-series, Mikuni, and every other carb: stock specs vary by application and were not verified for this reference. Record yours from the manufacturer's instruction sheet with the source cited on the baseline — same rule as the CLI.</p>
+  </section>
+
+  <!-- CHECKLISTS -->
+  <section id="view-checks" class="view">
+    <h2>Shop checklists</h2>
+    <p class="muted">Tick steps off in the garage. Progress and notes are saved on this device, per checklist.</p>
+    <div id="checks-leak" class="card"></div>
+    <div id="checks-bench" class="card"></div>
+  </section>
+
+  <!-- DATA -->
+  <section id="view-data" class="view">
+    <h2>Your data</h2>
+    <p class="muted">No account, no server, no sync. Your journal lives in this browser's local storage. Back it up with Export — one JSON file.</p>
+    <p id="data-counts" class="card"></p>
+    <div class="card">
+      <h3>Export</h3>
+      <p class="muted">This file uses the exact same format as the <a href="https://github.com/JoshuaPopps/carb-tune-journal">carb-tune-journal CLI</a>'s <code>data.json</code> — import it there, or import a CLI export here, and the journal carries over.</p>
+      <button id="export-btn" class="primary">Download JSON backup</button>
+      <button id="copy-export-btn" class="secondary">Copy JSON to clipboard</button>
+    </div>
+    <div class="card">
+      <h3>Import</h3>
+      <p class="muted">Import replaces the current journal. Export first if you want to keep it.</p>
+      <label>From file<input type="file" id="import-file" accept=".json,application/json"></label>
+      <label>Or paste JSON<textarea id="import-text" rows="4"></textarea></label>
+      <button id="import-btn" class="primary">Import journal</button>
+    </div>
+    <div class="card">
+      <h3>Try it out</h3>
+      <p class="muted">Loads an example journal (example bike, example numbers) so you can see the history deltas and STOCK / ≠ stock badges before entering your own bike.</p>
+      <button id="sample-btn" class="secondary">Load example data</button>
+      <button id="clear-btn" class="danger">Delete everything</button>
+    </div>
+  </section>
+</main>
+
+<nav class="bottomnav" aria-label="Sections">
+  <button class="navbtn active" data-view="journal">📖 Journal</button>
+  <button class="navbtn" data-view="bikes">🏍️ Bikes &amp; Carbs</button>
+  <button class="navbtn" data-view="reference">📐 CV40 Ref</button>
+  <button class="navbtn" data-view="checks">✅ Checklists</button>
+  <button class="navbtn" data-view="data">💾 Data</button>
+</nav>
+
+<div id="toast" class="toast" role="status"></div>
+<script src="app.js"></script>
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function () {
+      navigator.serviceWorker.register('sw.js').catch(function () { /* offline use is optional */ });
+    });
+  }
+</script>
+</body>
+</html>
