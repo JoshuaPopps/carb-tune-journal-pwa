@@ -323,12 +323,12 @@ function exportJSON(store) {
 
 function sampleStore() {
   var s = emptyStore();
-  var bike = addBike(s, { name: 'Example 1997 Softail', year: '1997', make: 'Harley-Davidson', model: 'Heritage Softail', odometer: '61200', notes: 'Example data only — delete it and add your own bike.' });
+  var bike = addBike(s, { name: 'Example 1990 Softail', year: '1990', make: 'Harley-Davidson', model: 'Heritage Softail', odometer: '61200', notes: 'Example data only — delete it and add your own bike.' });
   var genuine = addCarb(s, { bike_id: bike.id, model: 'Keihin CV40', nickname: 'Genuine CV40', status: 'on-bike' });
   addCarb(s, { bike_id: bike.id, model: 'Keihin CV40 (clone)', nickname: 'Clone CV40', status: 'parts-donor' });
-  setBaseline(s, genuine.id, { main_jet: '170', pilot_jet: '42', float_height: '0.413-0.453 in.' }, 'Harley-Davidson Softail Service Manual #99482-98, Section 4');
+  setBaseline(s, genuine.id, { main_jet: '185', pilot_jet: '45', float_height: '0.413-0.453 in.' }, '1984-1999 Softail Repair Manual (secondary - 1990 factory manual not in library)');
   logEntry(s, { carb_id: genuine.id, date: '2026-10-20', mileage: '61230', changes: { accel_pump: 'rebuilt: new diaphragm and spring' }, ran: { idle: 'steady, no stumble off idle' }, conditions: { temp_f: '88' }, notes: 'pump was leaking at the diaphragm' });
-  logEntry(s, { carb_id: genuine.id, date: '2026-10-21', mileage: '61245', changes: { main_jet: '175' }, ran: { cruise: 'slight surge at 55 mph, trying one size up', wot: 'pulls clean', plug: 'eggshell/off-white' }, conditions: {}, notes: '' });
+  logEntry(s, { carb_id: genuine.id, date: '2026-10-21', mileage: '61245', changes: { main_jet: '190' }, ran: { cruise: 'slight surge at 55 mph, trying one size up', wot: 'pulls clean', plug: 'eggshell/off-white' }, conditions: {}, notes: '' });
   return s;
 }
 
