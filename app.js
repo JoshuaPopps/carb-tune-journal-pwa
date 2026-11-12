@@ -328,7 +328,7 @@ function sampleStore() {
   addCarb(s, { bike_id: bike.id, model: 'Keihin CV40 (clone)', nickname: 'Clone CV40', status: 'parts-donor' });
   setBaseline(s, genuine.id, { main_jet: '170', pilot_jet: '42', float_height: '0.413-0.453 in.' }, 'Harley-Davidson Softail Service Manual #99482-98, Section 4');
   logEntry(s, { carb_id: genuine.id, date: '2026-10-20', mileage: '61230', changes: { accel_pump: 'rebuilt: new diaphragm and spring' }, ran: { idle: 'steady, no stumble off idle' }, conditions: { temp_f: '88' }, notes: 'pump was leaking at the diaphragm' });
-  logEntry(s, { carb_id: genuine.id, date: '2026-10-21', mileage: '61245', changes: { main_jet: '175' }, ran: { cruise: 'slight surge at 55 mph, trying one size up', wot: 'pulls clean', plug: 'light tan' }, conditions: {}, notes: '' });
+  logEntry(s, { carb_id: genuine.id, date: '2026-10-21', mileage: '61245', changes: { main_jet: '175' }, ran: { cruise: 'slight surge at 55 mph, trying one size up', wot: 'pulls clean', plug: 'eggshell/off-white' }, conditions: {}, notes: '' });
   return s;
 }
 
@@ -346,10 +346,12 @@ var CV40_FACTORY = [
   { label: 'Float level', value: '0.413–0.453 in. (10.49–11.51 mm)' },
   { label: 'Float measuring tilt', value: 'Carb on its manifold side, tilted 15–20° off base — outside that range the reading is wrong. Do not push on the float while measuring. Bend the float tab to adjust.' },
   { label: 'Float measuring point', value: 'Vernier/dial caliper depth gauge, from the carburetor O-ring flange face to the perimeter of the float.' },
-  { label: 'Inlet valve warning', value: 'Four-sided inlet valves are fine in any Keihin. Three-sided inlet valves must NOT be used in CV carburetors — they cause overflow.' },
-  { label: 'Idle mixture screw', value: 'Recessed under an aluminum EPA plug from the factory. Drill the plug with a ~1/16 in. bit, pull it with a sheet-metal screw.' },
-  { label: 'Manifold mounting cap screws', value: '15–17 ft-lbs' },
-  { label: 'Backplate-to-cylinder-head screws', value: '10–12 ft-lbs' },
+  { label: 'Inlet valve warning', value: 'Four-sided inlet valves are fine in any Keihin. Three-sided inlet valves must NOT be used in CV carburetors — they may cause overflow.' },
+  { label: 'Idle mixture screw', value: 'Recessed under an aluminum EPA plug from the factory, sealed with a plug — intended non-adjustable (#99482-98 p.4-2). The drill-out method is community practice, see the tuning guide.' },
+  { label: 'Manifold mounting cap screws', value: '15–17 ft-lbs (20–23 Nm)' },
+  { label: 'Backplate-to-cylinder-head screws', value: '10–12 ft-lbs (14–16 Nm)' },
+  { label: 'Backplate-to-carburetor screws', value: '3–5 ft-lbs (4–7 Nm)' },
+  { label: 'Air-cleaner cover screws', value: '3–5 ft-lbs (4–7 Nm)' },
   { label: 'Vacuum piston check', value: 'Air cleaner off, engine running: blip the throttle — the slide should rise smoothly. Engine off: lift it and release — it should drop smoothly to its stop.' },
   { label: 'Engine idle speed', value: '1000–1050 rpm' }
 ];
@@ -360,17 +362,51 @@ var CV40_TUNING = [
   { title: 'Needle shimming', body: '0.025 in. brass washers under the needle, one at a time, max ~two — richens the 1/4–3/4 throttle range.' },
   { title: 'Main jet', body: 'Only matters from 3/4 throttle to wide open. Change in steps of 5.' },
   { title: 'Stage 1 ballpark', body: 'Pipes + high-flow air cleaner: 45 pilot / 175–180 main is the common landing zone. Verify on your bike — do not assume.' },
-  { title: 'Plug chop', body: 'Fresh plugs, ride ~1 mile at part throttle under half, pull the clutch and kill the engine, read the insulator — eggshell/off-white is the target. (Tan coloring was a leaded-fuel artifact; ignore old "tan = perfect" advice.)' },
+  { title: 'Plug chop', body: 'Fresh plugs, ride ~1 mile at part throttle under half, pull the clutch and kill the engine, read the insulator — eggshell/off-white is the target. (Tan coloring was a leaded-fuel artifact; ignore old "tan = perfect" advice.) Spark plug gap (factory): 0.038–0.043 in.' },
   { title: 'The enrichener is not a choke', body: 'It is a separate fuel circuit. Push it back in as soon as the engine sustains itself; riding with it out fouls plugs fast.' },
   { title: 'Slide mod (debated)', body: 'Drilling the slide vacuum port to 1/8 in. quickens throttle response. Plenty of riders swear by it; it is irreversible, so it is your call.' },
+  { title: 'Idle-mixture-screw plug removal (community method)', body: 'The factory plug can be drilled with a ~1/16 in. bit and pulled with a sheet-metal screw to expose the mixture screw. Community practice, not a factory procedure — the manual only says the screw is recessed, sealed with a plug, and intended non-adjustable.' },
+  { title: 'Storage — drain the float bowl', body: 'Before putting the bike away, open the float-bowl drain screw and drain the bowl. Fuel left sitting in the bowl varnishes the jets and idle passages.' },
   { title: 'EZ-Just style thumb screw', body: 'Replaces the slotted mixture screw — worth it, saves knuckles.' }
+];
+/* ------------------------------------------------------------------ */
+/* S&S Super E reference. Factory numbers from S&S's own instruction */
+/* sheets — Quick Tuning Guide #510-0245, Installation & Jetting      */
+/* #51-1012, Fuel Line Conversion Kit #510-0279. Jetting is S&S's     */
+/* starting point only: "Re-jet carb for best performance." The       */
+/* mixture-screw diagnostic is magazine-sourced and labelled as such. */
+/* ------------------------------------------------------------------ */
+var SS_SUPER_E_FACTORY = [
+  { label: 'Intermediate jet — 74–88ci', value: '.0295' },
+  { label: 'Main jet — 74–88ci', value: '.072' },
+  { label: 'Intermediate jet — 883cc', value: '.0265–.028' },
+  { label: 'Main jet — 883cc', value: '.066' },
+  { label: 'Intermediate jet — 96–107ci', value: '.031' },
+  { label: 'Main jet — 96–107ci', value: '.076' },
+  { label: 'Intermediate jet — 111–124ci', value: '.031' },
+  { label: 'Main jet — 111–124ci', value: '.078' },
+  { label: 'Idle mixture screw', value: '1¼ turns out from lightly seated — seat gently, never force it (you will damage the seat)' },
+  { label: 'Idle speed screw', value: '½ turn clockwise from engagement point' },
+  { label: 'Accelerator pump screw', value: '2 turns counter-clockwise from seated' },
+  { label: 'Warm idle speed', value: '950–1050 rpm' },
+  { label: 'Main jet air bleed', value: '.040 stock (2004+ adjustable-bleed carbs only — earlier carbs are fixed at .040)' },
+  { label: 'Float', value: 'Top of float even with the shelf in the bowl below the gasket surface, needle spring-loaded ball depressed' },
+  { label: 'Throat / venturi', value: '1-7/8 in. throat (47.6 mm), 1-9/16 in. venturi (39.6 mm)' }
+];
+var SS_SUPER_E_TUNING = [
+  { title: 'Tuning order', body: 'Idle mixture → idle speed → accelerator pump → intermediate jet → main jet → air bleed. Main jet is always last. Shut the pump off (screw seated) while setting jets, then open it only enough to kill the bog.' },
+  { title: 'Intermediate jet — lean or rich?', body: 'Ride at a steady 40–50 mph. Sneezing or popping through the air cleaner below ~3000 rpm = too lean, go one size larger. Rough low-speed running, fouled plugs, black smoke, bad mileage = too rich, go one size smaller. Always re-adjust the idle mixture and idle speed screws after any jet change.' },
+  { title: 'Main jet — .004 in. steps', body: 'Roll-on from 50 to 70 mph in 3rd gear. Backfires or breaks up in the carb = too small, increase by .004 in. Flat or will not accelerate = too large, decrease by .004 in.' },
+  { title: 'Accelerator pump — set it last', body: 'With the engine idling, turn the adjustment screw clockwise until it lightly seats, then snap the throttle open — the engine should stumble. Turn the screw counter-clockwise ¼ or ½ turn at a time until it responds with smooth, quick response.' },
+  { title: 'Enrichener cold start', body: 'There is no choke plate — the enrichener is a separate fuel circuit. Lift the rod and set it to stay up, start without opening the throttle (cracking the throttle lets air bypass the enrichener passage), let it warm, then push the rod down in steps as the engine will take it.' },
+  { title: 'Mixture-screw diagnostic (community rule of thumb)', body: 'If it takes less than ½ turn out to idle well, the intermediate jet is too large; if it takes more than 1¼ turns, the jet is too small. Magazine-sourced (Easyriders), not an S&S spec — a pointer, not a measurement.' }
 ];
 var CHECKLISTS = {
   leak: {
     title: 'Fuel-leak diagnosis',
     note: 'Work in this order. Tick each step off as you check it; add what you found.',
     steps: [
-      { title: 'Inlet needle valve', body: 'Pull it and look at the tip under light. Any groove = replace. Confirm it is the four-sided type (three-sided valves cause overflow in CV carbs).' },
+      { title: 'Inlet needle valve', body: 'Pull it and look at the tip under light. Any groove = replace. Confirm it is the four-sided type (three-sided valves may cause overflow in CV carbs).' },
       { title: 'Float tab', body: 'Set to the factory spec: 0.413–0.453 in. Too high = fuel level too high = overflow.' },
       { title: 'The float itself', body: 'Shake it; fuel sloshing inside means it is leaking and riding low (which holds the valve open). Also check the two halves are aligned.' },
       { title: 'Bowl O-ring', body: 'Any distortion or flat spots — replace it.' },
@@ -384,7 +420,7 @@ var CHECKLISTS = {
     steps: [
       { title: 'Read the jets', body: 'Bowl off, pull the main and slow jets, read the stamps under good light. They must read 170 / 42 (49-state). If you do not trust them, genuine Keihin jets thread straight into the clone — the first and cheapest fix.' },
       { title: 'Float level', body: 'Carb on its manifold side, tilted 15–20° off base. Caliper depth gauge from the O-ring flange face to the float perimeter: 0.413–0.453 in. Do not push on the float. Bend the tab to adjust.' },
-      { title: 'Inlet valve type', body: 'Four-sided only. A three-sided inlet valve must NOT be used in a CV carb — it causes overflow.' },
+      { title: 'Inlet valve type', body: 'Four-sided only. A three-sided inlet valve must NOT be used in a CV carb — it may cause overflow.' },
       { title: 'Shake the float', body: 'Fuel sloshing inside = leaking and riding low, which holds the inlet valve open.' },
       { title: 'Rubber inspection', body: 'Pump diaphragm and bowl O-ring are the clone weak points (cheap stock, ethanol eats it). Pinholes in the diaphragm = weak or no pump shot. Genuine-kit rubber is the swap.' },
       { title: 'Vacuum piston drop test', body: 'Engine off: lift the slide, release — it should drop smoothly to its stop. A sticky slide on a new clone = burr or casting flash in the bore.' },
@@ -546,6 +582,12 @@ function renderReference() {
     return '<tr><td>' + esc(s.label) + '</td><td>' + esc(s.value) + '</td></tr>';
   }).join('');
   $('ref-tuning').innerHTML = CV40_TUNING.map(function (t) {
+    return '<article class="tip"><h4>' + esc(t.title) + '</h4><p>' + esc(t.body) + '</p></article>';
+  }).join('');
+  $('ref-super-e').innerHTML = SS_SUPER_E_FACTORY.map(function (s) {
+    return '<tr><td>' + esc(s.label) + '</td><td>' + esc(s.value) + '</td></tr>';
+  }).join('');
+  $('ref-super-e-tuning').innerHTML = SS_SUPER_E_TUNING.map(function (t) {
     return '<article class="tip"><h4>' + esc(t.title) + '</h4><p>' + esc(t.body) + '</p></article>';
   }).join('');
 }
@@ -788,6 +830,7 @@ if (typeof module !== 'undefined' && module.exports) {
     effectiveSetup: effectiveSetup, entriesFor: entriesFor, entryDeltas: entryDeltas,
     logEntry: logEntry, deleteEntry: deleteEntry, deleteCarb: deleteCarb, deleteBike: deleteBike,
     validateImport: validateImport, exportJSON: exportJSON, sampleStore: sampleStore,
-    CV40_FACTORY: CV40_FACTORY, CV40_TUNING: CV40_TUNING, CHECKLISTS: CHECKLISTS
+    CV40_FACTORY: CV40_FACTORY, CV40_TUNING: CV40_TUNING, CHECKLISTS: CHECKLISTS,
+    SS_SUPER_E_FACTORY: SS_SUPER_E_FACTORY, SS_SUPER_E_TUNING: SS_SUPER_E_TUNING
   };
 }

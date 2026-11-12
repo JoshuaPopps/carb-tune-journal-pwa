@@ -4,7 +4,7 @@ Tested 2026-10-28. No build step, no dependencies in the app itself.
 Test data was throwaway example data — nothing here is anyone's real
 bike or real mileage.
 
-## Core-logic tests — `node test.js` (30 passed, 0 failed)
+## Core-logic tests — `node test.js` (53 passed, 0 failed)
 
 Run from the app directory against Node 24:
 
@@ -27,10 +27,25 @@ Run from the app directory against Node 24:
   cleanly with next numbers computed from the entries.
 - **CV40 reference values** checked character-for-character against
   the compiled notes: mains 170/175/180, slow 42, float
-  0.413–0.453 in., manifold 15–17 ft-lbs, backplate 10–12 ft-lbs,
-  idle 1000–1050 rpm; leak checklist 6 steps, bench checklist 7
-  steps; tuning guide covers pilot-first order and
+  0.413–0.453 in., manifold 15–17 ft-lbs (20–23 Nm), backplate
+  10–12 ft-lbs (14–16 Nm), backplate-to-carburetor and air-cleaner
+  cover 3–5 ft-lbs, idle 1000–1050 rpm; leak checklist 6 steps, bench
+  checklist 7 steps; tuning guide covers pilot-first order and
   enrichener-is-not-a-choke.
+- **Knowledge-base fixes (Nov 2026):** sample plug reading is
+  eggshell/off-white (not "light tan"); inlet-valve warning and both
+  checklists say three-sided valves *may* cause overflow; the factory
+  idle-mixture row carries no drill-out method (that lives in the
+  tuning guide as community practice); plug chop gives the factory
+  plug gap 0.038–0.043 in.; storage tip covers the float-bowl drain
+  screw.
+- **S&S Super E reference** checked against S&S #510-0245 / #51-1012 /
+  #510-0279: 74–88ci jets .0295 / .072, mixture screw 1¼ turns out,
+  idle speed screw ½ turn from engagement, pump screw 2 turns out,
+  air bleed .040 stock, float even with the shelf; tuning order with
+  the pump off while setting jets, .004 in. main-jet steps,
+  intermediate diagnostics at 40–50 mph, enrichener cold start
+  without opening the throttle.
 
 ## DOM smoke test — real UI in jsdom (13 passed, 0 failed)
 

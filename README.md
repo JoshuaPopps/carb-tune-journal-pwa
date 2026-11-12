@@ -31,10 +31,10 @@ the two trade one JSON file back and forth.
   parts donor: `on-bike`, `spare`, `parts-donor`, `retired`). The
   **factory baseline requires a source** — cite the manual or the
   manufacturer's instruction sheet, or it won't save.
-- **CV40 Ref tab** — the deep Keihin CV40 reference, built from
-  the Oct 26 requirement: factory specs, tuning guide, and
-  leak/bench-check notes, every item tagged **FACTORY** or
-  **COMMUNITY**. See "On specs" below.
+- **CV40 Ref tab** — the deep Keihin CV40 reference, plus the S&amp;S
+  Super E reference, built from the Oct 26 requirement: factory specs,
+  tuning guide, and leak/bench-check notes, every item tagged
+  **FACTORY** or **COMMUNITY**. See "On specs" below.
 - **Checklists tab** — two tap-through shop checklists with progress
   and per-step notes saved on the device:
   - **Fuel-leak diagnosis** — the 6-step order (needle valve, float
@@ -88,7 +88,7 @@ History
     Main jet  170 -> 175
     Cruise / midrange: slight surge at 55 mph, trying one size up
     Wide open: pulls clean
-    Plug reading: light tan
+    Plug reading: eggshell/off-white
 
   #1 — Oct 20, 2026 @ 61,230 mi
     Accelerator pump  (not set) -> rebuilt: new diaphragm and spring
@@ -128,10 +128,12 @@ Section 4:**
 | Slow (pilot) jet — all markets | 42 |
 | Float level | 0.413–0.453 in. (10.49–11.51 mm) |
 | Float measuring tilt | Carb on its manifold side, tilted 15–20° off base |
-| Inlet valve warning | Four-sided only — three-sided valves must NOT be used in CV carbs (they cause overflow) |
-| Idle mixture screw | Sealed under an aluminum EPA plug from the factory |
-| Manifold mounting cap screws | 15–17 ft-lbs |
-| Backplate-to-cylinder-head screws | 10–12 ft-lbs |
+| Inlet valve warning | Four-sided only — three-sided valves must NOT be used in CV carbs (they may cause overflow) |
+| Idle mixture screw | Sealed under an aluminum EPA plug from the factory — intended non-adjustable; the drill-out method is community practice, see the tuning guide |
+| Manifold mounting cap screws | 15–17 ft-lbs (20–23 Nm) |
+| Backplate-to-cylinder-head screws | 10–12 ft-lbs (14–16 Nm) |
+| Backplate-to-carburetor screws | 3–5 ft-lbs (4–7 Nm) |
+| Air-cleaner cover screws | 3–5 ft-lbs (4–7 Nm) |
 | Vacuum piston check | Blip the throttle — slide rises smoothly; lift and release — drops smoothly to its stop |
 | Engine idle speed | 1000–1050 rpm |
 
@@ -142,11 +144,38 @@ seated, tuned only at full operating temp; decel popping = lean idle
 circuit, back out 1/4 turn at a time; needle shimming with 0.025 in.
 washers, max ~two; main jet in steps of 5, matters only from 3/4 to
 wide open; Stage 1 ballpark 45 pilot / 175–180 main (verify, don't
-assume); plug chop method (eggshell/off-white target); the enrichener
-is not a choke — push it back in as soon as the engine sustains
-itself.
+assume); plug chop method (eggshell/off-white target, plug gap
+0.038–0.043 in.); the enrichener is not a choke — push it back in as
+soon as the engine sustains itself; the idle-mixture-screw plug
+drill-out (~1/16 in. bit, sheet-metal screw pull) is community
+practice, not a factory procedure; drain the float bowl via the drain
+screw before storage so fuel can't varnish the jets.
 
-Everything else — S&S Super E/G, Linkert M-series, Mikuni, and any carb
+**FACTORY — S&S Super E, from S&S instruction sheets #510-0245 /
+#51-1012 / #510-0279:**
+
+| Spec | Value |
+|---|---|
+| Intermediate / main jet — 74–88ci | .0295 / .072 |
+| Intermediate / main jet — 883cc | .0265–.028 / .066 |
+| Intermediate / main jet — 96–107ci | .031 / .076 |
+| Intermediate / main jet — 111–124ci | .031 / .078 |
+| Idle mixture screw | 1¼ turns out from lightly seated |
+| Idle speed screw | ½ turn clockwise from engagement point |
+| Accelerator pump screw | 2 turns counter-clockwise from seated |
+| Warm idle speed | 950–1050 rpm |
+| Main jet air bleed | .040 stock (2004+ adjustable-bleed carbs only) |
+| Float | Top of float even with the shelf in the bowl below the gasket surface |
+
+S&S tuning order: idle mixture → idle speed → accelerator pump →
+intermediate jet → main jet → air bleed (main jet last, pump off while
+setting jets). Intermediate diagnostics at a steady 40–50 mph;
+main-jet changes in .004 in. steps on a 50–70 mph roll-on in 3rd.
+Enrichener cold start: lift the rod and leave it up, start without
+opening the throttle, push it down in steps as the engine warms. S&S
+calls the jetting a starting point only — re-jet for best performance.
+
+Everything else — S&S Super G, Linkert M-series, Mikuni, and any carb
 not listed — is explicitly flagged as unverified. You enter those
 numbers yourself from the manufacturer's instruction sheet, with the
 source cited on the baseline, so the numbers are always traceable.
@@ -157,7 +186,7 @@ source cited on the baseline, so the numbers are always traceable.
 |---|---|
 | `index.html` | The app shell: five tabs, all forms |
 | `styles.css` | Shop-manual styling, big touch targets, no frameworks |
-| `app.js` | All of it: store, journal logic, CV40 reference, checklists, UI |
+| `app.js` | All of it: store, journal logic, CV40 + S&S Super E reference, checklists, UI |
 | `sw.js` | Service worker — caches the app shell for offline use |
 | `manifest.webmanifest` | Install metadata (name, icons, colors) |
 | `icons/` | App icons (192/512 PNG + SVG) |

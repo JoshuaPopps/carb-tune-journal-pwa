@@ -97,8 +97,8 @@ check('California main 175', spec('Main jet — California') === '175');
 check('HDI main 180', spec('Main jet — HDI') === '180');
 check('slow jet 42 all markets', spec('Slow (pilot) jet — all markets') === '42');
 check('float 0.413-0.453 in', (spec('Float level') || '').indexOf('0.413') === 0);
-check('manifold torque 15-17 ft-lbs', spec('Manifold mounting cap screws') === '15–17 ft-lbs');
-check('backplate torque 10-12 ft-lbs', spec('Backplate-to-cylinder-head screws') === '10–12 ft-lbs');
+check('manifold torque 15-17 ft-lbs (20-23 Nm)', (spec('Manifold mounting cap screws') || '').indexOf('15–17 ft-lbs') === 0);
+check('backplate torque 10-12 ft-lbs (14-16 Nm)', (spec('Backplate-to-cylinder-head screws') || '').indexOf('10–12 ft-lbs') === 0);
 check('idle 1000-1050 rpm', spec('Engine idle speed') === '1000–1050 rpm');
 check('leak checklist has 6 steps', app.CHECKLISTS.leak.steps.length === 6);
 check('bench checklist has 7 steps', app.CHECKLISTS.bench.steps.length === 7);
@@ -106,6 +106,41 @@ check('tuning guide covers pilot-first order',
   app.CV40_TUNING.some(function (x) { return x.title === 'Order matters'; }));
 check('tuning guide covers enrichener-is-not-a-choke',
   app.CV40_TUNING.some(function (x) { return x.title.indexOf('enrichener') >= 0; }));
+
+console.log('knowledge-base fixes (Nov 2026)');
+check('sample plug reading is eggshell/off-white, not light tan',
+  s.entries.filter(function (e) { return e.num === 2; })[0].ran.plug === 'eggshell/off-white');
+check('inlet valve warning says may cause overflow',
+  (spec('Inlet valve warning') || '').indexOf('may cause overflow') >= 0);
+check('factory idle-mixture row has no drill-out method',
+  (spec('Idle mixture screw') || '').indexOf('Drill') < 0 && (spec('Idle mixture screw') || '').indexOf('1/16') < 0);
+check('tuning guide carries the drill-out method as community practice',
+  app.CV40_TUNING.some(function (x) { return x.title.indexOf('plug removal') >= 0 && x.body.indexOf('Community practice') >= 0; }));
+check('manifold torque carries 20-23 Nm', (spec('Manifold mounting cap screws') || '').indexOf('20–23 Nm') >= 0);
+check('backplate-to-head torque carries 14-16 Nm', (spec('Backplate-to-cylinder-head screws') || '').indexOf('14–16 Nm') >= 0);
+check('backplate-to-carb torque 3-5 ft-lbs', spec('Backplate-to-carburetor screws') === '3–5 ft-lbs (4–7 Nm)');
+check('air-cleaner cover torque 3-5 ft-lbs', spec('Air-cleaner cover screws') === '3–5 ft-lbs (4–7 Nm)');
+check('plug chop gives factory plug gap 0.038-0.043 in.',
+  app.CV40_TUNING.some(function (x) { return x.title === 'Plug chop' && x.body.indexOf('0.038–0.043 in.') >= 0; }));
+check('storage tip covers float-bowl drain screw',
+  app.CV40_TUNING.some(function (x) { return x.title.indexOf('Storage') === 0 && x.body.indexOf('drain screw') >= 0; }));
+check('leak checklist says valves may cause overflow',
+  app.CHECKLISTS.leak.steps[0].body.indexOf('may cause overflow') >= 0);
+check('bench checklist says valve may cause overflow',
+  app.CHECKLISTS.bench.steps[2].body.indexOf('may cause overflow') >= 0);
+console.log('S&S Super E reference');
+function ssSpec(label) { var row = app.SS_SUPER_E_FACTORY.filter(function (r) { return r.label === label; })[0]; return row && row.value; }
+check('74-88ci intermediate .0295', ssSpec('Intermediate jet — 74–88ci') === '.0295');
+check('74-88ci main .072', ssSpec('Main jet — 74–88ci') === '.072');
+check('idle mixture 1-1/4 turns out', (ssSpec('Idle mixture screw') || '').indexOf('1¼ turns out') === 0);
+check('idle speed screw 1/2 turn from engagement', (ssSpec('Idle speed screw') || '').indexOf('½ turn clockwise from engagement') === 0);
+check('pump screw 2 turns out from seated', (ssSpec('Accelerator pump screw') || '').indexOf('2 turns counter-clockwise') === 0);
+check('air bleed .040 stock', (ssSpec('Main jet air bleed') || '').indexOf('.040 stock') === 0);
+check('float even with shelf', (ssSpec('Float') || '').indexOf('even with the shelf') >= 0);
+check('S&S tuning order, pump off while setting jets', app.SS_SUPER_E_TUNING.some(function (x) { return x.title === 'Tuning order' && x.body.indexOf('air bleed') >= 0 && x.body.indexOf('pump off') >= 0; }));
+check('S&S main jet .004 in. steps', app.SS_SUPER_E_TUNING.some(function (x) { return x.title.indexOf('.004') >= 0; }));
+check('S&S intermediate diagnostics at 40-50 mph', app.SS_SUPER_E_TUNING.some(function (x) { return x.title.indexOf('Intermediate jet') === 0 && x.body.indexOf('40–50 mph') >= 0; }));
+check('S&S enrichener cold start, no throttle', app.SS_SUPER_E_TUNING.some(function (x) { return x.title.indexOf('Enrichener') === 0 && x.body.indexOf('without opening the throttle') >= 0; }));
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
