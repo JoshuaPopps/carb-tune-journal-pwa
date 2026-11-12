@@ -22,7 +22,6 @@
   --paper-grid: rgba(66, 91, 77, .105);
   --smudge: rgba(67, 45, 20, .13);
   --sketch: rgba(11, 12, 9, .38);
-  --coffee: rgba(104, 57, 18, .27);
   --patina: rgba(61, 83, 58, .14);
   --paper-fiber: rgba(73, 54, 27, .055);
   --radius: 0;
@@ -33,7 +32,6 @@ body {
   background:
     radial-gradient(ellipse at 9% 18%, var(--patina) 0 1.2%, transparent 4.2%),
     radial-gradient(ellipse at 86% 72%, var(--smudge) 0 .8%, transparent 3.8%),
-    radial-gradient(circle at 42% 53%, var(--coffee) 0 .45%, transparent 1.9%),
     repeating-linear-gradient(7deg, transparent 0 9px, var(--paper-fiber) 9.5px 10px, transparent 10.5px 22px),
     repeating-linear-gradient(0deg, transparent 0 23px, var(--paper-grid) 23px 24px),
     repeating-linear-gradient(90deg, transparent 0 23px, var(--paper-grid) 23px 24px),
@@ -51,8 +49,6 @@ body::before {
   z-index: -1;
   pointer-events: none;
   background:
-    radial-gradient(circle at 7% 20%, transparent 0 42px, var(--coffee) 43px 46px, rgba(104, 57, 18, .11) 47px 49px, transparent 51px),
-    radial-gradient(ellipse at 94% 61%, transparent 0 58px, var(--coffee) 59px 62px, rgba(104, 57, 18, .1) 63px 66px, transparent 68px),
     radial-gradient(ellipse at 24% 88%, var(--patina) 0 5px, transparent 28px),
     radial-gradient(ellipse at center, transparent 46%, rgba(65, 43, 20, .09) 100%);
   mix-blend-mode: multiply;
