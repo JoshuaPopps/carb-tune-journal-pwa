@@ -25,7 +25,7 @@ the two trade one JSON file back and forth.
   ambient conditions and how it ran at idle, off idle, cruise, wide
   open, and what the plugs looked like), and read the **history** —
   newest first, each entry showing its deltas from the setup before it
-  (`Main jet  170 -> 175`).
+  (`Main jet  185 -> 190`).
 - **Bikes & Carbs tab** — multiple bikes, multiple carbs per bike (the
   carb on the bike, the spare on the shelf, the clone you keep as a
   parts donor: `on-bike`, `spare`, `parts-donor`, `retired`). The
@@ -77,15 +77,15 @@ Example walkthrough (what the example journal shows):
 
 ```
 Current setup — Genuine CV40
-  Main jet               175                          ≠ stock
-  Slow/pilot jet         42                           STOCK
+  Main jet               190                          ≠ stock
+  Slow/pilot jet         45                           STOCK
   Float height           0.413-0.453 in               STOCK
 
-  baseline source: Harley-Davidson Softail Service Manual #99482-98, Section 4
+  baseline source: 1984-1999 Softail Repair Manual (secondary - 1990 factory manual not in library)
 
 History
   #2 — Oct 21, 2026 @ 61,245 mi
-    Main jet  170 -> 175
+    Main jet  185 -> 190
     Cruise / midrange: slight surge at 55 mph, trying one size up
     Wide open: pulls clean
     Plug reading: eggshell/off-white

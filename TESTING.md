@@ -9,9 +9,9 @@ bike or real mileage.
 Run from the app directory against Node 24:
 
 - **Sample journal** (mirrors the README walkthrough): 1 bike, 2
-  carbs, 2 entries; effective setup folds to main jet 175, pilot
-  still stock 42, float still the baseline range; entry #2's delta
-  computes as main jet 170 → 175 against the folded setup (baseline +
+  carbs, 2 entries; effective setup folds to main jet 190, pilot
+  still stock 45, float still the baseline range; entry #2's delta
+  computes as main jet 185 → 190 against the folded setup (baseline +
   #1), not just the previous entry's changes.
 - **Validation** (all rejected with clean errors): baseline without a
   source; duplicate bike name (case-insensitive); log with no setup
@@ -53,7 +53,7 @@ A throwaway harness in /tmp (not shipped) loaded the actual
 `index.html` + `app.js`, seeded the sample journal, and drove the UI:
 
 1. Journal renders current setup with STOCK and ≠ stock badges, the
-   cited baseline source, history deltas (170 → 175), and entry #2.
+   cited baseline source, history deltas (185 → 190), and entry #2.
 2. Reference tab activates; factory table shows the float spec;
    tuning guide shows the pilot-first rule.
 3. Checklists tab: ticking leak step 1 persists to localStorage and

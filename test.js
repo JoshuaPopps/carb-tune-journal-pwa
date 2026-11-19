@@ -20,13 +20,13 @@ check('sample has 1 bike, 2 carbs, 2 entries',
 var genuine = Object.keys(s.carbs).map(function (id) { return s.carbs[id]; })
   .filter(function (c) { return c.nickname === 'Genuine CV40'; })[0];
 var setup = app.effectiveSetup(s, genuine.id);
-check('current main jet folded to 175', setup.main_jet === '175', setup.main_jet);
-check('pilot still stock 42', setup.pilot_jet === '42');
+check('current main jet folded to 190', setup.main_jet === '190', setup.main_jet);
+check('pilot still stock 45', setup.pilot_jet === '45');
 check('float still baseline range', setup.float_height === '0.413-0.453 in.');
 var e2 = s.entries.filter(function (e) { return e.num === 2; })[0];
 var d = app.entryDeltas(s, e2);
-check('entry #2 delta is main 170 -> 175',
-  d.length === 1 && d[0].key === 'main_jet' && d[0].from === '170' && d[0].to === '175',
+check('entry #2 delta is main 185 -> 190',
+  d.length === 1 && d[0].key === 'main_jet' && d[0].from === '185' && d[0].to === '190',
   JSON.stringify(d));
 
 console.log('validation');
@@ -82,7 +82,7 @@ var exported = app.exportJSON(s);
 var back = app.validateImport(exported);
 var backGenuine = Object.keys(back.carbs).map(function (id) { return back.carbs[id]; })
   .filter(function (c) { return c.nickname === 'Genuine CV40'; })[0];
-check('round-trip keeps effective setup', app.effectiveSetup(back, backGenuine.id).main_jet === '175');
+check('round-trip keeps effective setup', app.effectiveSetup(back, backGenuine.id).main_jet === '190');
 /* A CLI data.json has no nextNum/checks keys — import must still work. */
 var cliShaped = { bikes: s.bikes, carbs: s.carbs, entries: s.entries };
 var cliBack = app.validateImport(JSON.stringify(cliShaped));
