@@ -1,6 +1,6 @@
 # Test notes — carb-tune-journal-pwa v1.0.0
 
-Tested 2026-10-28. No build step, no dependencies in the app itself.
+Tested 2026-10-28; re-tested 2026-11-20 (node test.js 53 passed, DOM smoke 13 passed) after the main/pilot corrections — step 5 of the DOM smoke test restated below. No build step, no dependencies in the app itself.
 Test data was throwaway example data — nothing here is anyone's real
 bike or real mileage.
 
@@ -60,7 +60,7 @@ A throwaway harness in /tmp (not shipped) loaded the actual
    progress reads (1/6 done).
 4. Adding a bike through the form renders it in the list.
 5. Logging a main-jet change through the form (Genuine carb) appears
-   in history as 175 → 180 with a "Logged entry #3" toast.
+   in history as 190 → 180 with a "Logged entry #3" toast.
 
 One real catch during this test: the first version of the harness
 picked the alphabetically-first carb (the Clone) instead of the
