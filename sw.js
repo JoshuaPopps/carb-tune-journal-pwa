@@ -1,10 +1,10 @@
 /* Carb Tune Journal service worker — app-shell cache so the journal
  * works offline in the garage. Version the cache name on release. */
-var CACHE = 'carb-tune-journal-v5';
+var CACHE = 'carb-tune-journal-v6';
 var ASSETS = [
   './', './index.html', './styles.css', './app.js',
   './manifest.webmanifest',
-  './icons/icon-192.png', './icons/icon-512.png', './icons/icon.svg'
+  './icons/icon-192.png', './icons/icon-512.png'
 ];
 
 self.addEventListener('install', function (event) {
