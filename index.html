@@ -21,6 +21,7 @@
 </header>
 
 <main>
+  <div id="handoff-box"></div>
   <!-- JOURNAL -->
   <section id="view-journal" class="view active">
     <label>Carburetor
@@ -37,6 +38,17 @@
     <div id="journal-history"></div>
   </section>
 
+  <!-- JETTING WIZARD -->
+  <section id="view-wizard" class="view">
+    <h2>Jetting wizard</h2>
+    <p class="muted">Step by step, in the manufacturer's own tuning order — intermediate jet first, main jet last, mixture screw re-adjusted after every intermediate change. Pick the carburetor and the wizard follows it: S&amp;S Super E, Keihin CV40, or a generic path for anything else. Every step cites its source; anything not verified is labelled <span class="badge unverified">UNVERIFIED</span>, never presented as factory spec.</p>
+    <label>Carburetor
+      <select id="wizard-carb"></select>
+    </label>
+    <p id="wizard-progress" class="card"></p>
+    <div id="wizard-steps"></div>
+  </section>
+
   <!-- BIKES & CARBS -->
   <section id="view-bikes" class="view">
     <h2>Bikes &amp; carburetors</h2>
@@ -50,7 +62,9 @@
         <label>Make<input type="text" id="bike-make" placeholder="Harley-Davidson"></label>
         <label>Model<input type="text" id="bike-model" placeholder="Heritage Softail"></label>
         <label>Odometer (mi)<input type="number" id="bike-odometer" inputmode="numeric"></label>
+        <label>Home elevation (ft)<input type="number" id="bike-elevation" inputmode="numeric" placeholder="e.g. 1152"></label>
       </div>
+      <p class="muted">Home elevation is the elevation the bike is jetted for — the wizard and the altitude advice measure from it. Glendale is about 1,152 ft. Leave it blank and set it later from the bike's card (type it, look up an Arizona ZIP, or read the GPS).</p>
       <label>Notes<textarea id="bike-notes" rows="2"></textarea></label>
       <button type="submit" class="primary">Add bike</button>
     </form>
@@ -106,6 +120,19 @@
     <p class="muted">S&amp;S's own tuning order and tests (#510-0245), except the mixture-screw diagnostic, which is magazine-sourced and labelled as such.</p>
     <div id="ref-super-e-tuning"></div>
 
+    <h3><span class="badge changed">DIRECTION ONLY</span> Altitude &amp; elevation</h3>
+    <p class="muted">S&amp;S publishes the direction of an altitude correction, not a per-foot jet-step table. Thinner air means the same jets run rich — jetting steps leaner with altitude. The correction table below is structured so the diagnostics app's carb flow can reuse it later (<code>ALTITUDE_CORRECTION</code>, <code>altitudeAdvice(homeFt, rideFt)</code>, <code>AZ_ZIP_ELEVATIONS</code> in <code>app.js</code>).</p>
+    <div id="ref-altitude"></div>
+
+    <h3><span class="badge changed">DIRECTION ONLY</span> Weather, temperature &amp; humidity</h3>
+    <p class="muted">Temperature and humidity move jetting the same way altitude does — through air density — but no published source gives a per-degree or per-percent jet-step table. The factory manual names a hotter or colder climate as a reason rejetting may be necessary, then sends you to a tuner for the size. The magazine gives a working rule instead of a table (<code>WEATHER_CORRECTION</code> in <code>app.js</code>).</p>
+    <div id="ref-weather"></div>
+
+    <h3>Arizona ZIP → elevation</h3>
+    <p class="muted">Town-centre elevations from the Arizona Office of Tourism city-elevation list. A small bundled table on purpose — a full US ZIP table is too big to ship, and these are the towns a Phoenix rider actually rides to. Your exact spot can sit a few hundred feet off the town figure; type your own number if you know it. The wizard and the per-bike elevation editor use this same table.</p>
+    <table class="setup"><tbody id="ref-az-zips"></tbody></table>
+    <p class="source">Source: Arizona Office of Tourism city elevations (town-centre figures).</p>
+
     <h3>Not listed here</h3>
     <p>S&amp;S Super G, Linkert M-series, Mikuni, and every other carb: stock specs vary by application and were not verified for this reference. Record yours from the manufacturer's instruction sheet with the source cited on the baseline — same rule as the CLI.</p>
   </section>
@@ -137,6 +164,12 @@
       <button id="import-btn" class="primary">Import journal</button>
     </div>
     <div class="card">
+      <h3>Receive a handoff</h3>
+      <p class="muted">A diagnosis sent from the Evo Diagnostic arrives as a link — tap it and this journal opens with a confirm card. If a messaging app mangled the link, paste the handoff JSON here instead: same check, same confirm, nothing is applied until you say so.</p>
+      <label>Or paste handoff JSON<textarea id="handoff-paste-text" rows="4" placeholder='{"format":"pocket-garage-handoff","version":1,…}'></textarea></label>
+      <button id="handoff-paste-btn" class="primary">Read handoff</button>
+    </div>
+    <div class="card">
       <h3>Try it out</h3>
       <p class="muted">Loads an example journal (example bike, example numbers) so you can see the history deltas and STOCK / ≠ stock badges before entering your own bike.</p>
       <button id="sample-btn" class="secondary">Load example data</button>
@@ -147,6 +180,7 @@
 
 <nav class="bottomnav" aria-label="Sections">
   <button class="navbtn active" data-view="journal">📖 Journal</button>
+  <button class="navbtn" data-view="wizard">🧭 Wizard</button>
   <button class="navbtn" data-view="bikes">Bikes &amp; Carbs</button>
   <button class="navbtn" data-view="reference">📐 CV40 Ref</button>
   <button class="navbtn" data-view="checks">✅ Checklists</button>
@@ -154,6 +188,7 @@
 </nav>
 
 <div id="toast" class="toast" role="status"></div>
+<script src="sw-update.js"></script>
 <script src="app.js"></script>
 <script>
   if ('serviceWorker' in navigator) {

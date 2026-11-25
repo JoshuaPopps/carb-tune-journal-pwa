@@ -1,10 +1,10 @@
 # Test notes — carb-tune-journal-pwa v1.0.0
 
-Tested 2026-10-28; re-tested 2026-11-20 (node test.js 53 passed, DOM smoke 13 passed) after the main/pilot corrections — step 5 of the DOM smoke test restated below. No build step, no dependencies in the app itself.
+Tested 2026-10-28; re-tested 2026-11-20 (node test.js 53 passed, DOM smoke 13 passed) after the main/pilot corrections — step 5 of the DOM smoke test restated below. Re-tested 2026-11-24 after the jetting wizard + altitude build (node test.js 105 passed, Playwright smoke 35 passed, zero console errors; service worker cache v7). Re-tested 2026-11-25 after the weather (temperature/humidity) correction pull-in (node test.js 147 passed, 0 failed; service worker cache v10; static-server check all 200). No build step, no dependencies in the app itself.
 Test data was throwaway example data — nothing here is anyone's real
 bike or real mileage.
 
-## Core-logic tests — `node test.js` (53 passed, 0 failed)
+## Core-logic tests — `node test.js` (147 passed, 0 failed)
 
 Run from the app directory against Node 24:
 
@@ -46,6 +46,90 @@ Run from the app directory against Node 24:
   the pump off while setting jets, .004 in. main-jet steps,
   intermediate diagnostics at 40–50 mph, enrichener cold start
   without opening the throttle.
+- **Jetting wizard (Nov 2026):** S&S path is 10 steps with intermediate
+  before main, main before pump-set-last, pump-off before intermediate
+  tuning, altitude second-to-last and weather last; every step cites its source; the roll-off
+  step is tagged UNVERIFIED with a source line starting "NOT in S&S"
+  and all three readings (picks up / hesitates / just slows);
+  idle step uses S&S's own mixture-screw thresholds (>1¾ / <1¼
+  turns) and says S&S wins over the magazine rule; CV40 path is 6
+  steps in pilot → needle → main order with altitude second-to-last
+  and weather last; unknown carbs get the 4-step generic path with
+  the same ending. Every weather step is tagged COMMUNITY, cites
+  ER_166 §74, and carries the cool, dry day rule. Wizard progress
+  records and rejects bogus outcomes and unknown carbs.
+- **Altitude correction table (Nov 2026):** flagged
+  `noNumericTable`, with the reason stated; no rule body contains a
+  decimal jet-size number; rules carry the 7,000 ft S&S test-rider
+  note, higher = richer / smaller jets, intermediate jet changed
+  first; CV note cites #99484-98 p.191. `altitudeAdvice` reads richer
+  Glendale → Flagstaff (+5,751 ft, smaller jets, intermediate first,
+  mixture screw first) and leaner on the way down; under 500 ft
+  reads "same"; missing elevation reads "unknown".
+- **Arizona ZIP elevations (Nov 2026):** 85302 Glendale 1,152 ft,
+  86001 Flagstaff 6,903 ft, 86336 Sedona 4,350 ft; unknown ZIP
+  returns null; lookup tolerates spaces/dashes; table has 18 towns.
+- **Per-bike elevation storage (Nov 2026):** stored at add with its
+  source; `setBikeElevation` validates (rejects non-numbers, >14,000,
+  unknown bikes) and a bad elevation leaves no half-added bike;
+  sample bike carries Glendale 1,152 ft; elevation and wizard state
+  survive export/import; CLI-shaped imports without the new keys
+  still work.
+- **Weather correction table (Nov 2026):** flagged
+  `noNumericTable`, with the reason stated (no published per-degree
+  or per-percent table in S&S, the factory manuals, Clymer, or the
+  magazine index); no rule prescribes a jet size (p.303 is a page
+  citation, not a jet number); rules carry the factory hotter/colder
+  climate line plus the factory's own answer to "what size" (ask a
+  dealer or performance tuner), the ER_166 §74 cool, dry day rule,
+  the hot/humid = richer / cold/dry = leaner direction, the
+  log-the-weather-with-every-entry rule (Temp (F) + Humidity (%)),
+  and the air-density mechanism (ER_243 §33). No `weatherAdvice()`
+  function: a computable answer would need a published threshold
+  and none exists.
+
+## Playwright smoke test — real UI in Chromium (35 passed, 0 failed, 0 console errors)
+
+> NOTE (Nov 25, 2026): this run predates the weather pull-in — its
+> wizard step-count assertions (CV40 0/5, S&S 1/9) are now stale
+> (0/6 and 1/10). The harness was throwaway in /tmp and is gone; it
+> needs rebuilding before the next UI smoke run. The node suite
+> (147 passed) covers the new weather content in the meantime.
+
+A throwaway harness in /tmp (not shipped) served a temp copy of the
+staging dir over a local static server (Google Fonts replaced with
+locally downloaded woff2 in the temp copy only) and drove the real UI
+in headless Chromium at phone viewport (390×844):
+
+1. Page loads, journal view active, six nav buttons including Wizard.
+2. Sample data loads (1 bike, 2 carbs, 2 entries).
+3. Wizard tab: CV40 path shows (pilot → needle → main), progress
+   0/5, home elevation 1,152 ft shown from the bike.
+4. Marking a CV40 step done reads 1/5; altitude check at 6,903 ft
+   reads richer and says mixture screw first.
+5. Adding a bike with elevation 1,152 ft, then an S&S Super E carb:
+   wizard switches to the 9-step S&S path, intermediate before main
+   in DOM order, roll-off step labelled UNVERIFIED / "NOT in S&S".
+6. Picking the lean outcome on the intermediate step shows "ONE size
+   larger" and a "Log intermediate jet change" button; progress 1/9.
+7. The log button jumps to the Journal with the log-form altitude
+   pre-filled from the bike (1152).
+8. ZIP lookup on the bike card: 86001 → Flagstaff 6,903 ft, source
+   `zip:86001`, saved.
+9. Reference tab: altitude section, "No published per-foot jet-step
+   table", the 7,000 ft note, AZ ZIP table rows for Flagstaff and
+   Glendale.
+10. Logging a main-jet change (0.076) through the form still works
+    (toast + history).
+11. Service worker registers; zero console errors and zero page
+    errors across the whole run.
+
+Two harness bugs caught during the run, both in the harness, not the
+app: the carb form's bike select defaults to the alphabetically-first
+bike (the carb first landed on the example bike), and one assertion
+string did not match the rendered wording ("no per-foot…" vs the
+rendered "No published per-foot…"). Fixed in the harness; the app
+needed no change.
 
 ## DOM smoke test — real UI in jsdom (13 passed, 0 failed)
 

@@ -35,6 +35,21 @@ the two trade one JSON file back and forth.
   Super E reference, built from the Oct 26 requirement: factory specs,
   tuning guide, and leak/bench-check notes, every item tagged
   **FACTORY** or **COMMUNITY**. See "On specs" below.
+- **Jetting wizard tab** — step by step, in the manufacturer's own
+  tuning order: intermediate jet first, main jet last, mixture screw
+  re-adjusted after every intermediate change, accelerator pump set
+  last. The wizard follows the carb you pick (S&S Super E, Keihin
+  CV40, or a generic path for anything else), each step cites its
+  source, and your outcome at each test step is saved on the device.
+  Jet-change outcomes offer a one-tap jump into the journal to log
+  the change. See "Jetting wizard" below.
+- **Altitude, per bike** — every bike carries a home elevation (the
+  elevation it is jetted for): type it, look it up from the bundled
+  Arizona ZIP table, or read the phone GPS (cached on the bike, so it
+  works offline from then on). The wizard's altitude step works out
+  the direction from home elevation using S&S's published guidance,
+  and the log form pre-fills altitude from the bike. See "Altitude &
+  elevation" below.
 - **Checklists tab** — two tap-through shop checklists with progress
   and per-step notes saved on the device:
   - **Fuel-leak diagnosis** — the 6-step order (needle valve, float
@@ -96,6 +111,139 @@ History
     Idle: steady, no stumble off idle
     notes: pump was leaking at the diaphragm
 ```
+
+## Jetting wizard
+
+The wizard walks the manufacturer's own tuning order, one step at a
+time, and saves your outcome at each test step (per carburetor, on
+the device). Pick a carb and the wizard follows it:
+
+**S&S Super E (10 steps)** — from S&S Quick Tuning Guide #510-0245
+and Installation & Jetting Instructions #51-1012 (2014 revision
+510-0251): verify stock settings (mixture 1¼ turns out, idle speed
+screw ½ turn from engagement, pump 2 turns out; .0295 / .072 for
+74–88ci) → warm the engine fully → idle mixture, then idle speed
+(S&S diagnostic: more than 1¾ turns out means the intermediate jet
+is probably too small; less than 1¼ means it may need one size
+smaller) → shut the accelerator pump OFF → intermediate jet first
+(steady 40–50 mph, slow roll-on at ~2,000/2,500/3,000 rpm;
+sneezing/popping = one size larger, rough/fouled/black smoke = one
+size smaller) → **main jet last** (roll-on 50–70 mph in 3rd, .004 in.
+steps) → accelerator pump set last → altitude step → weather step.
+
+Two honest flags in the S&S path:
+
+- **The roll-off cross-check (step 7) is UNVERIFIED.** At 3,500–
+  4,500 rpm, full throttle, roll off to ~¾: picks up speed = too
+  lean, hesitates = too large, just slows = within one size. That
+  test appears in **neither** S&S #510-0245 **nor** #51-1012 /
+  510-0251 (both read in full, Nov 2026), so the app labels it
+  UNVERIFIED and says S&S's roll-on test is the deciding test. If
+  Joshua wants it struck, it is one step definition in `app.js`.
+- **The mixture-screw diagnostic disagrees with the older magazine
+  rule.** The reference section still carries the Easyriders rule of
+  thumb (<½ turn = too large, >1¼ turns = too small). S&S's own
+  numbers are >1¾ / <1¼. The wizard uses S&S and says so on the
+  step; S&S wins.
+
+**Keihin CV40 (6 steps)** — pilot / idle first (~2.5 turns out
+baseline, community practice), needle next (0.025 in. shims, max
+~two), main jet last (steps of 5), then the altitude step and the
+weather step. The CV40 altitude step notes the factory
+self-compensation: the CV carb partially holds its mixture as
+pressure drops (#99484-98, p.191).
+
+**Anything else (4 steps)** — generic path: start from a cited
+baseline, idle circuit first / main last, then altitude and weather.
+No numbers are given for a carb the app has no verified reference for.
+
+## Altitude & elevation
+
+S&S publishes the **direction** of an altitude correction, not a
+table. From S&S Instruction 510-0251, "Elevation changes":
+
+- Try the idle mixture screw first — it "will often compensate for
+  changes in elevation of several thousand feet." S&S test riders
+  rode through changes upwards of **7,000 feet** without changing
+  jets.
+- Higher elevation runs **richer** — smaller jets may be required.
+  Lower elevation runs **leaner** — larger jets may be required.
+  Put the larger jets back when you return to lower elevation.
+- If jets must change, change the **intermediate** jet first "in
+  most cases", one size at a time, re-adjusting the mixture screw
+  after every change.
+
+**There is no published per-foot jet-step table.** None in S&S
+51-1012 / 510-0251 / 510-0245 (the p.14 Jetting Chart is displacement
+baselines only), none in the factory Harley manuals in the garage
+library (the Softail repair manual p.303 lists altitude change only
+as a reason rejetting *may* be necessary; the Sportster manual
+#99484-98 p.191 describes the CV's partial self-compensation), and
+none in the Easyriders magazine index (searched Nov 2026 — only
+Edelbrock ads mention altitude). The app says so in the reference
+tab and in the code, and the exact jet size comes from road-testing
+at that elevation. The correction table is structured for reuse by
+the diagnostics app's carb flow: `ALTITUDE_CORRECTION`,
+`altitudeAdvice(homeFt, rideFt)`, and `AZ_ZIP_ELEVATIONS` in
+`app.js` — direction only, no invented numbers.
+
+**Elevation per bike** — home elevation is stored on the bike
+record (with its source: `manual`, `zip:85302`, or `gps`), so it
+survives export/import and works offline. Three ways to set it:
+type the number, look up an Arizona ZIP (18 towns, town-centre
+elevations from the Arizona Office of Tourism city-elevation list —
+a full US ZIP table is too big to ship), or read the phone GPS
+(`navigator.geolocation`; many phones report a position but no
+altitude, in which case the app says so and falls back to typing it
+or the ZIP table). The log form pre-fills altitude from the bike's
+home elevation. Town-centre figures can sit a few hundred feet off
+your exact spot — type your own number if you know it.
+
+## Weather, temperature & humidity
+
+The rest of jetting correction, and the honest answer is the same
+shape as altitude: direction, not a table. Temperature and humidity
+move jetting through air density, exactly like altitude does — but
+**no published per-degree or per-percent jet-step table exists**
+anywhere checked: not in S&S 51-1012 / 510-0251 / 510-0245 (no
+temperature or humidity content at all), not in the factory Harley
+manuals (FSM §4 carburetor chapters), not in Clymer Evo 84-98, and
+not in the Easyriders magazine index (searched Nov 2026).
+
+What the sources *do* publish:
+
+- **Factory** (Softail 1984–1999 Repair Manual, p.303): rejetting
+  *may* be necessary if "the motorcycle is in use at considerably
+  higher or lower altitudes or in a considerably hotter or colder
+  climate than in the past." That is as far as the factory goes —
+  the same page says to check with a dealer or motorcycle
+  performance tuner for recommendations as to the size of jets to
+  install for your specific situation. The factory publishes no
+  number either.
+- **Magazine** (Easyriders ER_166 §74): "Keep in mind that
+  altitude, temperature, and humidity all play a role in determining
+  the correct jets. These factors won't be of much concern if you
+  tune for the lean side on a cool, dry day at the altitude you plan
+  to do most of your riding." A working rule, not a table — and its
+  own implication gives the direction: a cool, dry day is the lean
+  side, so hot, humid air runs richer and cold, dry air runs leaner.
+- **Mechanism** (Easyriders ER_243 §33): "what happens if the air
+  density (think elevation) changes?" — altitude, temperature, and
+  humidity all move air density, and the carb only sees density:
+  thinner air can't draw fuel as well.
+
+The app wires that in as `WEATHER_CORRECTION` in `app.js`
+(direction-only, `noNumericTable: true`), a "Weather, temperature
+& humidity" section in the reference tab, and a final weather step
+in every wizard path (S&S 10, CV40 6, generic 4) — tagged
+COMMUNITY, since the working rule is magazine wisdom, not factory
+spec. There is deliberately **no** `weatherAdvice()` function to
+match `altitudeAdvice()`: a computable answer would need a
+threshold ("hotter than X°F means one size…") and no published
+threshold exists. The working tool is the one the journal already
+has — every log entry records Temp (F), Altitude (ft), and Humidity
+(%), so a rich reading on a hot Phoenix afternoon is checked
+against the day before a jet gets blamed.
 
 ## Moving data between the app and the CLI
 
@@ -184,9 +332,9 @@ source cited on the baseline, so the numbers are always traceable.
 
 | File | What it is |
 |---|---|
-| `index.html` | The app shell: five tabs, all forms |
+| `index.html` | The app shell: six tabs, all forms |
 | `styles.css` | Shop-manual styling, big touch targets, no frameworks |
-| `app.js` | All of it: store, journal logic, CV40 + S&S Super E reference, checklists, UI |
+| `app.js` | All of it: store, journal logic, CV40 + S&S Super E reference, checklists, jetting wizard, altitude (AZ ZIP table + S&S direction-only correction), weather (temperature/humidity direction-only correction), UI |
 | `sw.js` | Service worker — caches the app shell for offline use |
 | `manifest.webmanifest` | Install metadata (name, icons, colors) |
 | `icons/` | App icons (192/512 PNG + SVG) |
@@ -194,11 +342,11 @@ source cited on the baseline, so the numbers are always traceable.
 
 ## Testing
 
-See [TESTING.md](TESTING.md) for the full test log: 30 core-logic
-tests (`node test.js`) plus a 13-assertion DOM smoke test that drives
-the real UI in jsdom (rendering, tab switching, checklist persistence,
-form add/log flows), and a local static-server check that every asset
-serves.
+See [TESTING.md](TESTING.md) for the full test log: 147 core-logic
+tests (`node test.js`) plus a 35-assertion Playwright smoke test
+that drives the real UI in Chromium (wizard flows, altitude advice,
+ZIP lookup, GPS fallback path, reference rendering, journal logging),
+and a local static-server check that every asset serves.
 
 ## Known limits
 
@@ -209,6 +357,18 @@ serves.
 - Setup values are freeform text; the app diffs and compares them as
   text, it does not parse units. Deliberate — carb setups don't fit
   one schema.
+- The wizard's roll-off cross-check (S&S path, step 7) could not be
+  verified against S&S #510-0245 or #51-1012 / 510-0251 and is
+  labelled UNVERIFIED in the app. The altitude correction is
+  direction-only: no published per-foot jet-step table exists in any
+  source checked (see "Altitude & elevation"). The weather
+  correction is direction-only too: no published per-degree or
+  per-percent jet-step table exists in any source checked (see
+  "Weather, temperature & humidity"), and there is no computable
+  weather-advice function because no published threshold exists to
+  compute from.
+- The ZIP elevation table covers 18 Arizona towns only. GPS altitude
+  depends on the phone — many report a position but no altitude.
 
 ## License
 
