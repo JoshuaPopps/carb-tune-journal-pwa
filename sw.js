@@ -1,8 +1,9 @@
 /* Carb Tune Journal service worker — app-shell cache so the journal
  * works offline in the garage. Version the cache name on release. */
-var CACHE = 'carb-tune-journal-v10';
+var CACHE = 'carb-tune-journal-v11';
 var ASSETS = [
   './', './index.html', './styles.css', './app.js', './sw-update.js',
+  './pg-parts-core.js',
   './manifest.webmanifest',
   './icons/icon-192.png', './icons/icon-512.png'
 ];

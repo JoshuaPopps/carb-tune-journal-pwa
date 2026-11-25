@@ -238,6 +238,17 @@ button {
 }
 button:hover { border-color: var(--accent); color: var(--accent-bright); }
 button:active { transform: translate(1px, 1px); }
+/* Service-worker update button (sw-update.js): hidden until a new
+ * version is waiting — tap it and the new worker takes over. The
+ * :hover hold keeps it still on touch, like the nav buttons. */
+.pg-sw-update {
+  display: block; width: 100%; margin: 10px 0; padding: 12px 16px;
+  border: 1px solid #9d6bff; border-radius: 8px;
+  background: #9d6bff; color: #070709;
+  font-weight: 700; text-align: center; cursor: pointer;
+}
+.pg-sw-update:hover { transform: none !important; border-color: #9d6bff; color: #070709; }
+.pg-sw-update:active { transform: none; }
 button.primary {
   background: linear-gradient(180deg, #fdfdff 0%, #d7d7de 38%, #9a9aa4 52%, #e6e6ec 68%, #b9b9c2 100%);
   color: #0b0b0d;
@@ -274,6 +285,19 @@ table.setup td:last-child {
 .badge.stock { background: var(--chip-bg); color: var(--accent-bright); }
 .badge.changed { background: var(--accent-dim); color: var(--accent-bright); border-color: var(--accent); }
 .badge.nobase { background: var(--chip-bg); color: var(--muted); }
+/* UNVERIFIED: dashed border, muted — shown, never dressed up as a spec. */
+.badge.unverified { background: var(--chip-bg); color: var(--muted); border-style: dashed; }
+/* Jetting wizard steps. */
+.wiz.done { border-left: 3px solid var(--accent); }
+.wiz-result {
+  background: var(--accent-dim);
+  border-left: 3px solid var(--accent);
+  padding: 8px 10px;
+  margin: 10px 0;
+}
+.wiz-alt { border-top: 1px dotted var(--line-strong); margin-top: 10px; padding-top: 6px; }
+button.picked { border-color: var(--accent); color: var(--accent-bright); box-shadow: var(--glow); }
+.elevrow { border-top: 1px dotted var(--line-strong); padding-top: 8px; margin-top: 8px; }
 .source { font-size: 0.9rem; color: var(--muted); font-family: "Archivo Narrow", system-ui, sans-serif; }
 .source.warn { color: var(--accent-bright); font-weight: 700; }
 .entry { border-top: 1px dotted var(--line-strong); padding: 12px 0; }

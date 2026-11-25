@@ -1057,6 +1057,67 @@ function renderBikes() {
   baseSel.innerHTML = carbOptions(selectedCarbId);
 }
 
+/* --- shared parts core (pg-parts-core.js) -------------------------- */
+/* Prices and torque come from the shared Pocket Garage parts core —
+   the same numbers the Evo Diagnostic uses. The journal never types
+   a price or a torque figure of its own. If the module did not load,
+   the section below says so and shows no price at all — never a
+   guessed value, never another part's price. Jet sizes, wizard steps
+   and altitude guidance stay local; this is prices + torque only. */
+function formatCheckDate(iso) {
+  var months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+  var parts = String(iso || '').split('-');
+  if (parts.length !== 3) return String(iso || '');
+  var m = parseInt(parts[1], 10);
+  return months[m - 1] + ' ' + parseInt(parts[2], 10) + ', ' + parts[0];
+}
+
+/* Rows the reference section shows from the parts core: the two jets
+   this journal prices (main-jet, pilot-jet) and the manifold
+   capscrew torque its procedures touch. Returns null when the core
+   is absent, so the caller can say so instead of guessing. */
+function partsCoreRows(core) {
+  if (!core) return null;
+  var rows = [];
+  ['main-jet', 'pilot-jet'].forEach(function (key) {
+    var e = core.getPrice(key);
+    if (!e) return;
+    if (typeof e.price === 'number') rows.push({ kind: 'price', key: key, entry: e });
+    else if (e.see) rows.push({ kind: 'see', key: key, entry: e }); // pointer shown as-is, never followed
+  });
+  var t = core.getTorque('fsm-99482-98-ch4', 'manifold-mounting-capscrews');
+  if (t) rows.push({ kind: 'torque', key: 'manifold-mounting-capscrews', entry: t });
+  return rows;
+}
+
+function partsCoreHtml(core) {
+  if (!core) {
+    return '<p class="muted">Part prices are not available — the shared parts core did not load. ' +
+      'The jet sizes and specs above are unaffected.</p>';
+  }
+  var rows = partsCoreRows(core);
+  var html = rows.map(function (r) {
+    if (r.kind === 'price') {
+      var e = r.entry;
+      return '<article class="tip"><h4>' + esc(e.name) + '</h4><p>$' + e.price.toFixed(2) +
+        ' — ' + esc(e.source) + ' — <a href="' + esc(e.url) + '" target="_blank" rel="noopener">product page</a>' +
+        ' (checked ' + esc(formatCheckDate(e.date)) + ').' +
+        (e.note ? ' ' + esc(e.note) : '') + '</p></article>';
+    }
+    if (r.kind === 'see') {
+      return '<article class="tip"><h4>' + esc(r.entry.key || r.key) + '</h4><p>' +
+        esc(r.entry.note || 'No standalone price — see the kit it ships in.') + '</p></article>';
+    }
+    var t = r.entry;
+    return '<article class="tip"><h4>Manifold mounting capscrews</h4><p>' + esc(t.value) +
+      ' — ' + esc(t.ref) + ' (' + esc(t.appliesTo) + ').</p></article>';
+  }).join('');
+  html += '<p class="source">Shop cost: part + ask your shop — no labor rate is published anywhere. ' +
+    'Shared prices from the Pocket Garage parts core (pg-parts-core.js), read from live product pages ' +
+    'Nov 24, 2026.</p>';
+  return html;
+}
+
 function renderReference() {
   $('ref-factory').innerHTML = CV40_FACTORY.map(function (s) {
     return '<tr><td>' + esc(s.label) + '</td><td>' + esc(s.value) + '</td></tr>';
@@ -1067,6 +1128,11 @@ function renderReference() {
   $('ref-super-e').innerHTML = SS_SUPER_E_FACTORY.map(function (s) {
     return '<tr><td>' + esc(s.label) + '</td><td>' + esc(s.value) + '</td></tr>';
   }).join('');
+  var partsEl = $('ref-parts');
+  if (partsEl) {
+    partsEl.innerHTML = partsCoreHtml(
+      typeof PG_PartsCore !== 'undefined' ? PG_PartsCore : null);
+  }
   $('ref-super-e-tuning').innerHTML = SS_SUPER_E_TUNING.map(function (t) {
     return '<article class="tip"><h4>' + esc(t.title) + '</h4><p>' + esc(t.body) + '</p></article>';
   }).join('');
@@ -1700,6 +1766,8 @@ if (typeof module !== 'undefined' && module.exports) {
     resolvePocketHandoffBike: resolvePocketHandoffBike,
     pinPocketRosterKey: pinPocketRosterKey,
     carbForHandoff: carbForHandoff, wizardHandoffTarget: wizardHandoffTarget,
-    handoffCitation: handoffCitation
+    handoffCitation: handoffCitation,
+    formatCheckDate: formatCheckDate, partsCoreRows: partsCoreRows,
+    partsCoreHtml: partsCoreHtml
   };
 }

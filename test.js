@@ -410,8 +410,9 @@ var path = require('path');
 var _sw = fs.readFileSync(path.join(__dirname, 'sw.js'), 'utf8');
 var _html = fs.readFileSync(path.join(__dirname, 'index.html'), 'utf8');
 var _appjs = fs.readFileSync(path.join(__dirname, 'app.js'), 'utf8');
-check('sw.js caches v10', _sw.indexOf('carb-tune-journal-v10') >= 0);
+check('sw.js caches v11', _sw.indexOf('carb-tune-journal-v11') >= 0);
 check('sw.js precaches sw-update.js', _sw.indexOf('sw-update.js') >= 0);
+check('sw.js precaches pg-parts-core.js', _sw.indexOf('pg-parts-core.js') >= 0);
 check('sw.js has the SKIP_WAITING message handler',
   _sw.indexOf("addEventListener('message'") >= 0 && _sw.indexOf('SKIP_WAITING') >= 0);
 check('sw.js does not call skipWaiting on install',
@@ -423,6 +424,46 @@ check('app.js calls PG_SWUpdate.init', _appjs.indexOf('PG_SWUpdate.init') >= 0);
 check('sw-update.js vendored byte-identical to canonical',
   fs.readFileSync(path.join(__dirname, 'sw-update.js'), 'utf8') ===
   fs.readFileSync(path.join(__dirname, '..', '..', 'sw-update.js'), 'utf8'));
+
+/* --- shared parts core (pg-parts-core.js) --- */
+var core = require('./pg-parts-core.js');
+check('index.html loads pg-parts-core.js before app.js',
+  _html.indexOf('src="pg-parts-core.js"') >= 0 &&
+  _html.indexOf('src="pg-parts-core.js"') < _html.indexOf('src="app.js"'));
+check('pg-parts-core.js vendored byte-identical to canonical',
+  fs.readFileSync(path.join(__dirname, 'pg-parts-core.js'), 'utf8') ===
+  fs.readFileSync(path.join(__dirname, '..', '..', 'pg-parts-core.js'), 'utf8'));
+check('reference view has a parts-core slot',
+  _html.indexOf('id="ref-parts"') >= 0);
+check('parts core rows are the two jets + manifold torque',
+  (function () {
+    var rows = app.partsCoreRows(core);
+    return rows && rows.length === 3 &&
+      rows[0].kind === 'price' && rows[0].key === 'main-jet' && rows[0].entry.price === 6.26 &&
+      rows[1].kind === 'price' && rows[1].key === 'pilot-jet' && rows[1].entry.price === 4.99 &&
+      rows[2].kind === 'torque' && rows[2].key === 'manifold-mounting-capscrews' &&
+      rows[2].entry.value === '15-17 ft-lbs (20-23 Nm)';
+  })());
+check('parts core rows are null when the module did not load',
+  app.partsCoreRows(null) === null);
+check('parts core HTML shows both jet prices, the torque, the check date, and part + ask your shop',
+  (function () {
+    var h = app.partsCoreHtml(core);
+    return h.indexOf('$6.26') >= 0 && h.indexOf('$4.99') >= 0 &&
+      h.indexOf('15-17 ft-lbs') >= 0 && h.indexOf('checked Nov 24, 2026') >= 0 &&
+      h.indexOf('part + ask your shop') >= 0 &&
+      h.indexOf('Dennis Kirk') >= 0 && h.indexOf('J&amp;P Cycles') >= 0 &&
+      h.indexOf('denniskirk.com') >= 0 && h.indexOf('jpcycles.com') >= 0;
+  })());
+check('parts core HTML without the module shows no price at all',
+  (function () {
+    var h = app.partsCoreHtml(null);
+    return h.indexOf('$') < 0 && h.indexOf('did not load') >= 0;
+  })());
+check('check dates format as Nov 24, 2026', app.formatCheckDate('2026-11-24') === 'Nov 24, 2026');
+check('jet sizes stay local — the reference tables still carry them, not the core',
+  app.CV40_FACTORY.some(function (s) { return s.label.indexOf('Main jet') >= 0 && s.value === '170'; }) &&
+  core.getPrice('main-jet').name.indexOf('170') < 0);
 
 console.log('\n' + passed + ' passed, ' + failed + ' failed');
 process.exit(failed ? 1 : 0);
